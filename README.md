@@ -1,1 +1,1 @@
-# multi-threading-java-sorting-library
+# Multi Threading Java Sorting Library
