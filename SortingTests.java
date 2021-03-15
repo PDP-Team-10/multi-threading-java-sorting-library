@@ -85,6 +85,47 @@ public class SortingTests {
         // Quick sort
 
         // Bubble sort
+        System.out.println("[Bubble Sort]");
+            System.out.println("-\tSequential:");
+
+            arrayCopy = ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            BubbleSort.bubbleSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+            arrayCopy = shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            BubbleSort.bubbleSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+            arrayCopy = descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            BubbleSort.bubbleSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
+
+            // Parallel
+            System.out.println("-\tParallel:");
+
+            arrayCopy = ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            // sort the array
+            endTime = System.currentTimeMillis();
+            System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+            arrayCopy = shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            // sort the array
+            endTime = System.currentTimeMillis();
+            System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+            arrayCopy = descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            // sort the array
+            endTime = System.currentTimeMillis();
+            System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
         // Insertion sort
 
