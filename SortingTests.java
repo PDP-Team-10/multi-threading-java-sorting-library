@@ -45,7 +45,7 @@ public class SortingTests {
 
             arrayCopy = ascendingArray.clone();
             startTime = System.currentTimeMillis();
-            // sort the array
+            MergeSort.sort(arrayCopy, 0, arrayCopy.length - 1);
             endTime = System.currentTimeMillis();
             System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
 
