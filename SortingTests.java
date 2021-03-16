@@ -95,6 +95,48 @@ public class SortingTests {
         System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
         // Quick sort
+        System.out.println("[ Quick sort ]");
+        // Sequential
+        System.out.println("-\tSequential:");
+
+        arrayCopy = ascendingArray.clone();
+        startTime = System.currentTimeMillis();
+        QuickSort.quickSort(arrayCopy, 0, arrayCopy.length-1);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = shuffledArray.clone();
+        startTime = System.currentTimeMillis();
+        QuickSort.quickSort(arrayCopy, 0, arrayCopy.length-1);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = descendingArray.clone();
+        startTime = System.currentTimeMillis();
+        QuickSort.quickSort(arrayCopy, 0, arrayCopy.length-1);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
+
+        // Parallel
+        System.out.println("-\tParallel:");
+
+        arrayCopy = ascendingArray.clone();
+        startTime = System.currentTimeMillis();
+        //sort it
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = shuffledArray.clone();
+        startTime = System.currentTimeMillis();
+        //sort it
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = descendingArray.clone();
+        startTime = System.currentTimeMillis();
+        //sort it
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
         // Bubble sort
         System.out.println("[Bubble Sort]");
