@@ -51,13 +51,13 @@ public class SortingTests {
 
             arrayCopy = shuffledArray.clone();
             startTime = System.currentTimeMillis();
-            // sort the array
+            MergeSort.sort(arrayCopy, 0, arrayCopy.length - 1);
             endTime = System.currentTimeMillis();
             System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
 
             arrayCopy = descendingArray.clone();
             startTime = System.currentTimeMillis();
-            // sort the array
+            MergeSort.sort(arrayCopy, 0, arrayCopy.length - 1);
             endTime = System.currentTimeMillis();
             System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
@@ -66,19 +66,31 @@ public class SortingTests {
 
             arrayCopy = ascendingArray.clone();
             startTime = System.currentTimeMillis();
-            // sort the array
+            try{
+                MergeSort.concurrentSort(arrayCopy);
+            }catch (InterruptedException e){
+                System.err.println(e);
+            }
             endTime = System.currentTimeMillis();
             System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
 
             arrayCopy = shuffledArray.clone();
             startTime = System.currentTimeMillis();
-            // sort the array
+            try{
+                MergeSort.concurrentSort(arrayCopy);
+            }catch (InterruptedException e){
+                System.err.println(e);
+            }
             endTime = System.currentTimeMillis();
             System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
 
             arrayCopy = descendingArray.clone();
             startTime = System.currentTimeMillis();
-            // sort the array
+            try{
+                MergeSort.concurrentSort(arrayCopy);
+            }catch (InterruptedException e){
+                System.err.println(e);
+            }
             endTime = System.currentTimeMillis();
             System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
