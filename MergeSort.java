@@ -1,9 +1,23 @@
 
 /* Java program for Merge Sort */
-/* This code is contributed by Rajat Mishra */
+/* sequential code is contributed by Rajat Mishra */
 /* on geeksforgeeks */
-class MergeSort 
+public class MergeSort extends Thread
 {
+    private int l, r;
+    private int[] arr;
+    
+    public MergeSort(int[] arr, int l, int r){
+        this.arr = arr;
+        this.l = l;
+        this.r = r;
+    }
+    
+    @Override
+    public void run(){
+        sort(arr, l, r);
+    }
+    
     // Merges two subarrays of arr[].
     // First subarray is arr[l..m]
     // Second subarray is arr[m+1..r]
@@ -82,8 +96,40 @@ class MergeSort
             System.out.print(arr[i] + " ");
         System.out.println();
     }
- 
-    // Driver code
+
+
+    static void concurrentSort(int arr[]) throws InterruptedException{
+        MergeSort[] threads = new MergeSort[4];
+        int threadSize = arr.length / 4;
+        for (int i = 0; i < 4; i++){
+            int low = i * threadSize;
+            int high = (i +1)* threadSize - 1;
+            if (high > arr.length)
+                high = arr.length;
+
+            threads[i] = new MergeSort(arr, low, high);
+            threads[i].start();
+        }
+
+        for (int i = 0; i < 4; i++){
+            threads[i].join();
+        }
+
+        int low = 0;
+        int mid = threadSize;
+        int high = 2 * threadSize - 1;
+        merge(arr, low, mid, high);
+
+        low = 2 *threadSize;
+        mid = 3 * threadSize;
+        high = arr.length - 1;
+        merge(arr, low, mid, high);
+
+        merge(arr, 0, low, high);
+
+        
+    }
+    
     
 }
 
