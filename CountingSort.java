@@ -1,3 +1,13 @@
+import java.lang.Thread;
+
+class ThreadSort extends Thread 
+{
+    public void run() 
+    {
+        System.out.println("Hello");
+    }
+}
+
 public class CountingSort 
 {
     public static int maximum(int [] array)
