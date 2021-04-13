@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-class SelectionSort implements Callable
+class SelectionSort implements Callable<ArrayList<Integer>>
 {
     private int[] arr;
     private int low;
@@ -17,7 +18,7 @@ class SelectionSort implements Callable
         this.high = high;
     }
 
-    public int[] call() {
+    public ArrayList<Integer> call() {
         List<Integer> values = new ArrayList<>();
         // Find all values in the range
         for (int v: arr) {
@@ -32,7 +33,12 @@ class SelectionSort implements Callable
         }
         // Sort the values
         selectionSort(intValues);
-        return intValues;
+
+        ArrayList<Integer> sortedValues = new ArrayList<>();
+        for (int v: intValues) {
+            sortedValues.add(v);
+        }
+        return sortedValues;
     }
 
     public static void selectionSort(int[] arr)
@@ -52,7 +58,7 @@ class SelectionSort implements Callable
         }
     }
 
-    public static void concurrentSelectionSort(int[] arr) throws Exception {
+    public static void concurrentSelectionSort(int[] arr) {
         int n = arr.length;
         int k = 4;  // Number of threads
 
@@ -73,11 +79,16 @@ class SelectionSort implements Callable
             SelectionSort task = new SelectionSort(arr, minValue + i * threadRange, (i == k - 1) ? maxValue + 1 : minValue + (i + 1) * threadRange);
             futures.add(executor.submit(task));
         }
+        executor.shutdown();
 
         // Get result of each thread
-        List<List<Integer>> sortedSubRanges = new ArrayList<>();
+        List<ArrayList<Integer>> sortedSubRanges = new ArrayList<>();
         for (int i = 0; i < k; i++) {
-            sortedSubRanges.add(futures.get(i).get());
+            try {
+                sortedSubRanges.add(futures.get(i).get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
 
         // Stitch sorted subarrays into single array

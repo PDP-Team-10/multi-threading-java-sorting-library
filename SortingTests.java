@@ -142,6 +142,47 @@ public class SortingTests {
         // Insertion sort
 
         // Selection sort
+        System.out.println("[Selection Sort]");
+        System.out.println("-\tSequential:");
+
+        arrayCopy = ascendingArray.clone();
+        startTime = System.currentTimeMillis();
+        SelectionSort.selectionSort(arrayCopy);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = shuffledArray.clone();
+        startTime = System.currentTimeMillis();
+        SelectionSort.selectionSort(arrayCopy);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = descendingArray.clone();
+        startTime = System.currentTimeMillis();
+        SelectionSort.selectionSort(arrayCopy);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
+
+        // Parallel
+        System.out.println("-\tParallel:");
+
+        arrayCopy = ascendingArray.clone();
+        startTime = System.currentTimeMillis();
+        SelectionSort.concurrentSelectionSort(arrayCopy);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = shuffledArray.clone();
+        startTime = System.currentTimeMillis();
+        SelectionSort.concurrentSelectionSort(arrayCopy);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = descendingArray.clone();
+        startTime = System.currentTimeMillis();
+        SelectionSort.concurrentSelectionSort(arrayCopy);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
         // Counting sort
         System.out.println("[Counting Sort]");
