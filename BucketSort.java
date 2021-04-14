@@ -8,7 +8,7 @@ class ThreadSort extends Thread
     }
 }
 
-public class CountingSort 
+public class BucketSort 
 {
     public static int maximum(int [] array)
     {
