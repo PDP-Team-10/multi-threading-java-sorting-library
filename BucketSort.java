@@ -141,7 +141,7 @@ public class BucketSort implements Callable<Integer>
 
     public static void main(String [] args) 
     {
-        int [] array = new int[100000];
+        int [] array = new int[(int)2e8];
 
         for (int i = 0; i < array.length; i++)
         {
