@@ -30,11 +30,27 @@ class Value
 }
 
 
-public class BucketSort implements Callable<Integer>
+public class BucketSort
 {
-    public static int maximum(int [] array)
+    public int index = 0;
+    public Value [] bucket;
+    public Integer min, max;
+
+    public void sleep(int seconds)
     {
-        int max = Integer.MIN_VALUE;
+        try 
+        {
+            TimeUnit.SECONDS.sleep(seconds);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void maximum(int [] array)
+    {
+        max = Integer.MIN_VALUE;
         for (int i = 0; i < array.length; i++)
         {
             if (array[i] > max)
@@ -42,13 +58,11 @@ public class BucketSort implements Callable<Integer>
                 max = array[i];
             }
         }
-
-        return max;
     }
 
-    public static int minimum(int [] array)
+    public void minimum(int [] array)
     {
-        int min = Integer.MAX_VALUE;
+        min = Integer.MAX_VALUE;
         for (int i = 0; i < array.length; i++)
         {
             if (array[i] < min)
@@ -56,20 +70,18 @@ public class BucketSort implements Callable<Integer>
                 min = array[i];                
             }
         }
-
-        return min;
     }
 
-    public static void sortSequential(int [] array)
+    public void sortSequential(int [] array)
     {
         // Both O(n)
-        int max = maximum(array);
-        int min = minimum(array);
+        maximum(array);
+        minimum(array);
 
         int bucketSize = max - min + 1;
         
         // O(m)
-        Value [] bucket = new Value[bucketSize];
+        bucket = new Value[bucketSize];
 
         for (int i = 0; i < bucketSize; i++)
         {
@@ -97,32 +109,65 @@ public class BucketSort implements Callable<Integer>
         }
     }
 
-    public static void sort(int [] array)
+    public void sort(int [] array)
     {
-        // Both O(n)
-        int max = maximum(array);
-        int min = minimum(array);
+        maximum(array);
+        minimum(array);
 
         int bucketSize = max - min + 1;
-        
-        // O(m)
-        Value [] bucket = new Value[bucketSize];
+
+        bucket = new Value[bucketSize];
 
         for (int i = 0; i < bucketSize; i++)
         {
             bucket[i] = new Value();
         }
 
-        // O(n)
+        Callable<Value []> cache = () ->
+        {
+            int key = array[index] - min;
+
+            bucket[key].lock.lock();
+
+            try
+            {
+                bucket[key].value++;
+            }
+            finally
+            {
+                bucket[key].lock.unlock();
+                index++;
+                return bucket;
+            }
+        };
+
+        int numThreads = Runtime.getRuntime().availableProcessors();
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+        ArrayList<Future<Value []>> futures = new ArrayList<>();
+
+
         for (int i = 0; i < array.length; i++)
         {
-            int k = array[i] - min;
-            bucket[k].value++;
+            futures.add(executor.submit(cache));
+        }
+
+        executor.shutdown();
+
+        for (Future<Value []> f: futures)
+        {
+            try 
+            {
+                bucket = f.get();
+            }
+            catch (InterruptedException | ExecutionException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         int j = 0;
-        
-        // O(m)
+
         for (int i = 0; i < bucket.length; i++)
         {
             while (bucket[i].value > 0)
@@ -132,16 +177,11 @@ public class BucketSort implements Callable<Integer>
                 j++;
             }
         }
-    }
-
-    public Integer call()
-    {
-        return 0;
     }
 
     public static void main(String [] args) 
     {
-        int [] array = new int[(int)2e8];
+        int [] array = new int[(int)3];
 
         for (int i = 0; i < array.length; i++)
         {
@@ -151,10 +191,15 @@ public class BucketSort implements Callable<Integer>
         // System.out.println(Arrays.toString(array));
 
         long start = System.currentTimeMillis();
-        // sortSequential(array);
-        sort(array);
+        
+        BucketSort b = new BucketSort();
+        b.sort(array);
+        // b.sortSequential(array);
+        
         long finish = System.currentTimeMillis();
+        
         System.out.println("Finished: " + ((finish - start)) + " ms");
+        
 
         // System.out.println(Arrays.toString(array));
     }
