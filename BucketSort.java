@@ -1,72 +1,124 @@
-import java.lang.Thread;
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+import java.lang.Runtime;
+import java.util.concurrent.TimeUnit;
 
-class ThreadSort extends Thread 
+import javax.xml.validation.ValidatorHandler;
+
+// Value Object: Contains an integer and lock
+// class Value
+// {
+//     public Integer value;
+
+//     Value ()
+//     {
+//         this.value = 0;
+//     }
+
+//     public String toString()
+//     {
+//         return "(" + this.value + ")";
+//     }
+// }
+
+class Max extends Thread
 {
-    public void run() 
+    private int [] array; 
+    public int max;
+
+    Max (int [] array)
     {
-        System.out.println("Hello");
+        this.array = array;
+        this.max = Integer.MIN_VALUE;
+    }
+
+    public void run()
+    {
+        for (int i = 0; i < this.array.length; i++)
+        {
+            if (this.array[i] > this.max)
+            {
+                this.max = this.array[i];
+            }
+        }
     }
 }
 
-public class BucketSort 
+class Min extends Thread
 {
-    public static int maximum(int [] array)
-    {
-        int max = Integer.MIN_VALUE;
-        for (int i = 0; i < array.length; i++)
-        {
-            if (array[i] > max)
-            {
-                max = array[i];
-            }
-        }
+    private int [] array; 
+    public int min;
 
-        return max;
+    Min (int [] array)
+    {
+        this.array = array;
+        this.min = Integer.MAX_VALUE;
     }
 
-    public static int minimum(int [] array)
+    public void run()
     {
-        int min = Integer.MAX_VALUE;
-        for (int i = 0; i < array.length; i++)
+        for (int i = 0; i < this.array.length; i++)
         {
-            if (array[i] < min)
+            if (this.array[i] < this.min)
             {
-                min = array[i];                
+                this.min = this.array[i];                
             }
         }
+    }
+}
 
-        return min;
+public class BucketSort extends Thread
+{
+    private int min, max;
+    private int [] bucket;
+    private int [] array;
+
+    public void run()
+    {
+
     }
 
-    public static void sort(int [] array)
+    public void sleep(int seconds)
     {
-        // Both O(n)
-        int max = maximum(array);
-        int min = minimum(array);
+        try 
+        {
+            TimeUnit.SECONDS.sleep(seconds);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
-        int bucketSize = max - min + 1;
+    public void sort(int [] array) throws InterruptedException
+    {
+        Max tmax = new Max(array);
+        Min tmin = new Min(array);
+        tmax.start();
+        tmin.start();
+        tmax.join();
+        tmin.join();
+
         
-        // O(m)
-        int [] bucket = new int[bucketSize];
+    }
 
-        // O(n)
+    public static void main(String [] args) throws InterruptedException
+    {
+        int [] array = new int[(int)3];
+
         for (int i = 0; i < array.length; i++)
         {
-            int k = array[i] - min;
-            bucket[k]++;
+            array[i] = (int)(Math.random() * 10) + 1;
         }
 
-        int j = 0;
+        System.out.println(Arrays.toString(array));
+
+        long start = System.currentTimeMillis();
+        BucketSort b = new BucketSort();
+        b.sort(array);
+        long finish = System.currentTimeMillis();
         
-        // O(m)
-        for (int i = 0; i < bucket.length; i++)
-        {
-            while (bucket[i] > 0)
-            {
-                bucket[i]--;
-                array[j] = i + min;
-                j++;
-            }
-        }
+        System.out.println("Finished: " + ((finish - start)) + " ms");
     }
 }
