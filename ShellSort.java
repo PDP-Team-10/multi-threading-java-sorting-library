@@ -89,34 +89,12 @@ public class ShellSort <T extends Comparable<? super T>> extends Thread {
     }
 
     public static <T extends Comparable<? super T>> boolean isSorted(List<T> list)
-    {
-        boolean sorted = true;        
+    {       
         for (int i = 1; i < list.size(); i++) {
-            if (list.get(i-1).compareTo(list.get(i)) > 0) sorted = false;
+            if (list.get(i-1).compareTo(list.get(i)) > 0) return false;
         }
-
-        return sorted;
+        return true;
     }
-
-
-    
-   /* public static void main (String[] args) throws InterruptedException{
-        //int[] test = {2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15};
-        System.out.println("Testing...");
-        final int testNum = 5000000;
-        ArrayList<Integer> test = new ArrayList<Integer>();
-        Random rand = new Random();
-        for (int i = 0; i < testNum; i++) {
-            test.add(rand.nextInt(testNum));//test.add(rand.nextInt(testNum));
-        }
-
-        ShellSort.concurrentShellSort(test);
-       // ShellSort.shellSort(test);
-        //ShellSort.shellSort(test);
-        //System.out.println(test);
-        System.out.println(ShellSort.isSorted(test));
-
-    } */
 }
 
 // Source: Interviewdojo.com
