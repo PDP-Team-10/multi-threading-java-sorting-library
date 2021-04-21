@@ -1,128 +1,94 @@
 import java.util.concurrent.*;
 import java.util.*;
 
-public class ShellSort extends Thread {
+public class ShellSort <T extends Comparable<? super T>> extends Thread {
 
-    private List<Integer> arr;
+    private List<T> arr;
 
-    public ShellSort(ArrayList<Integer> arr) { 
+    public ShellSort(List<T> arr) { 
         this.arr = arr;
     }
 
     @Override
     public void run() { concurrentShellSortHelper();}
 
-    // Sequential insertion sort implementation
-    public static void insertionSort(int arr[]) {
-        int n = arr.length;
-        for (int i = 1; i < n; i++) {
-            int k = arr[i];
-            int j = i - 1;
-
-            while (j >= 0 && arr[j] > k) {
-                arr[j + 1] = arr[j];
-                j = j - 1;
-            }
-            arr[j + 1] = k;
-        }
-    }
-
     private void concurrentShellSortHelper() {
         int n = arr.size();
         for (int gap = n/2; gap > 0; gap /= 2) {
             for (int i = gap; i < n; i++) {
-                int temp = arr.get(i);
+                T key = arr.get(i);
                 int j = i;  
-                while (j >= gap && arr.get(j - gap) > temp) {
+                while (j >= gap && arr.get(j - gap).compareTo(key) > 0) {
                     arr.set(j, arr.get(j - gap));
                     j -= gap;
                 }
-                arr.set(j, temp);
+                arr.set(j, key);
             }
         }
     }
 
-    // Sequential shell sort implementation
-    public static void shellSort(int[] arr) {
-        int n = arr.length;
+    // Sequential generic shell sort implementation
+    public static <T extends Comparable<? super T>> void shellSort(List<T> list) {
+        int n = list.size();
         for (int gap = n/2; gap > 0; gap /= 2) {
             for (int i = gap; i < n; i++) {
-                int temp = arr[i];
-                int j = i;  
-                while (j >= gap && arr[j - gap] > temp) {
-                    arr[j] = arr[j - gap];
+                T key = list.get(i);
+                int j = i;
+                while (j >= gap && list.get(j - gap).compareTo(key) > 0) {
+                    list.set(j, list.get(j - gap));
                     j -= gap;
                 }
-                arr[j] = temp;
+                list.set(j, key);
             }
         }
     }
 
-    // The main event: concurrent shell sort
-    public static void concurrentShellSort(List<Integer> arr) throws InterruptedException{
-        //int n = arr.size();
+    public static <T extends Comparable<? super T>> void concurrentShellSort(List<T> list) throws InterruptedException{
         final int numThreads = Runtime.getRuntime().availableProcessors();
-        //ExecutorService pool = Executors.newCachedThreadPool();
-       // List<Callable<Object>> calls = new ArrayList<Callable<Object>>();
-        ExecutorService pool = Executors.newFixedThreadPool(numThreads); //Runtime.getRuntime().availableProcessors()
-        List<ArrayList<Integer>> partitions = new ArrayList<ArrayList<Integer>>(numThreads);
-        int partition = (arr.size() + numThreads - 1) / numThreads;
-        for (int i = 0; i < numThreads; i++) {
-            int start = i * partition;
-            int end = Math.min(start + partition, arr.size());
-            partitions.add(new ArrayList<Integer>(arr.subList(start,end)));
-            pool.execute(new ShellSort(partitions.get(i)));
-            //calls.add(Executors.callable(new ShellSort(partitions.get(i))));
-        }
+        ExecutorService pool = Executors.newFixedThreadPool(numThreads); 
+        ArrayList<List<T>> partitions = new ArrayList<List<T>>(numThreads);
+        int partitionSize = (list.size() + numThreads - 1) / numThreads;
 
-       /* for (int gap = n/2; gap > 0; gap /= 2) {
-           // pool.execute(new ShellSort(arr, gap, length));
-            for (int i = 0; i < gap; i++)
-                calls.add(Executors.callable(new ShellSort(arr, gap, n - i)));
-               // pool.execute(new ShellSort(arr, gap, n - i));
-            List<Future<Object>> futures = pool.invokeAll(calls);
-            //calls.clear();
-        }*/
-        
+        for (int i = 0; i < numThreads; i++) {
+            int start = i * partitionSize;
+            int end = Math.min(start + partitionSize, list.size());
+            partitions.add(new ArrayList<T>(list.subList(start, end)));
+            pool.execute(new ShellSort(partitions.get(i)));
+        }
 
         pool.shutdown();
 
         try {
-            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
-                pool.shutdownNow();
-            }
+            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) 
+                pool.shutdownNow();     
         } catch (InterruptedException e) {
             pool.shutdownNow();
         } finally {
-            ShellSort.merge(arr, partitions);
+            ShellSort.merge(list, partitions);
         }
     }
 
-    private static void merge(List<Integer> arr, List<ArrayList<Integer>> partitions) {
+    // Repurposed from Interviewdojo.com
+    public static <T extends Comparable<? super T>> void merge(List<T> list, ArrayList<List<T>> partitions) {
         PriorityQueue<Node> pq = new PriorityQueue<Node>();
-        for (ArrayList<Integer> p : partitions) {
-            pq.add(new Node(p,0));
-        }
+
+        for (List<T> p : partitions) //List<T> p : partitions
+            pq.add(new Node(p, 0));
+        
         int i = 0;
-        //List<Integer> result = new ArrayList<Integer>(arr.size());
 
         while (!pq.isEmpty()) {
             Node n = pq.poll();
-            arr.set(i, n.arr.get(n.index));
+            list.set(i, (T) n.arr.get(n.index));
             i++;
 
             if (n.hasNext()) {
-                pq.add(new Node(n.arr, n.index+1));
+                pq.add(new Node(n.arr, n.index + 1));
             }
         }
     }
 
-    public static void printArr(int[] arr) {
-        for (Integer e : arr) System.out.print(e + " ");
-        System.out.println();
-    }
-
-    public static boolean isSorted(List<Integer> list)
+    public static <T extends Comparable<? super T>> boolean isSorted(List<T> list)
     {
         boolean sorted = true;        
         for (int i = 1; i < list.size(); i++) {
@@ -134,30 +100,31 @@ public class ShellSort extends Thread {
 
 
     
-    public static void main (String[] args) throws InterruptedException{
+   /* public static void main (String[] args) throws InterruptedException{
         //int[] test = {2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15};
         System.out.println("Testing...");
-        final int testNum = 5000;
+        final int testNum = 5000000;
         ArrayList<Integer> test = new ArrayList<Integer>();
         Random rand = new Random();
         for (int i = 0; i < testNum; i++) {
-            test.add(rand.nextInt(testNum));
+            test.add(rand.nextInt(testNum));//test.add(rand.nextInt(testNum));
         }
-    
+
         ShellSort.concurrentShellSort(test);
+       // ShellSort.shellSort(test);
         //ShellSort.shellSort(test);
-       // System.out.println(test);
+        //System.out.println(test);
         System.out.println(ShellSort.isSorted(test));
 
-    } 
+    } */
 }
 
 // Source: Interviewdojo.com
-class Node implements Comparable<Node> {
-    List<Integer> arr;
+class Node <T extends Comparable<? super T>> implements Comparable<Node> { //T extends Comparable<? super T>
+    List<T> arr;
     int index;
 
-    public Node(List<Integer> arr, int index) {
+    public Node(List<T> arr, int index) {
         this.arr = arr;
         this.index = index;
     }
@@ -168,6 +135,6 @@ class Node implements Comparable<Node> {
 
     @Override
     public int compareTo(Node o) {
-        return arr.get(index) - o.arr.get(o.index);//arr[index] - o.arr[o.index];
+        return arr.get(index).compareTo((T) o.arr.get(o.index));//arr[index] - o.arr[o.index];
     }
 }
