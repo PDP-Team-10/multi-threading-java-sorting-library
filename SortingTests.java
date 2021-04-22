@@ -39,7 +39,7 @@ public class SortingTests {
         int[] arrayCopy;
         
         System.out.println("Comparison of execution time for sequential and multi-threaded sorting algorithms");
-        /*
+        
         // Merge sort
         System.out.println("[ Merge sort ]");
         // Sequential
@@ -98,7 +98,7 @@ public class SortingTests {
 
         // Quick sort
 
-        */
+       
         // Bubble sort
         System.out.println("[Bubble Sort]");
         System.out.println("-\tSequential:");
@@ -142,7 +142,7 @@ public class SortingTests {
         endTime = System.currentTimeMillis();
         System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
-        /*
+        
         // Insertion sort
 
         // Selection sort
@@ -256,6 +256,6 @@ public class SortingTests {
         endTime = System.currentTimeMillis();
         System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
-        */
+        
     }
 }
