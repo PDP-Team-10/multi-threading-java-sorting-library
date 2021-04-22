@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Random;
 
 public class SortingTests {
@@ -38,7 +39,7 @@ public class SortingTests {
         int[] arrayCopy;
         
         System.out.println("Comparison of execution time for sequential and multi-threaded sorting algorithms");
-
+        /*
         // Merge sort
         System.out.println("[ Merge sort ]");
         // Sequential
@@ -97,6 +98,7 @@ public class SortingTests {
 
         // Quick sort
 
+        */
         // Bubble sort
         System.out.println("[Bubble Sort]");
         System.out.println("-\tSequential:");
@@ -119,27 +121,28 @@ public class SortingTests {
         endTime = System.currentTimeMillis();
         System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
-        // Parallel
+        // Parallel Bubble
         System.out.println("-\tParallel:");
 
         arrayCopy = ascendingArray.clone();
         startTime = System.currentTimeMillis();
-        // sort the array
+        BubbleSort.concurrentBubbleSort(arrayCopy);
         endTime = System.currentTimeMillis();
         System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
 
         arrayCopy = shuffledArray.clone();
         startTime = System.currentTimeMillis();
-        // sort the array
+        BubbleSort.concurrentBubbleSort(arrayCopy);
         endTime = System.currentTimeMillis();
         System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
 
         arrayCopy = descendingArray.clone();
         startTime = System.currentTimeMillis();
-        // sort the array
+        BubbleSort.concurrentBubbleSort(arrayCopy);
         endTime = System.currentTimeMillis();
         System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
+        /*
         // Insertion sort
 
         // Selection sort
@@ -252,5 +255,7 @@ public class SortingTests {
         }
         endTime = System.currentTimeMillis();
         System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
+
+        */
     }
 }
