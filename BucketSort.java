@@ -10,63 +10,15 @@ import java.util.concurrent.locks.ReentrantLock;
 class Value
 {
     public Integer value;
-    public ReentrantLock lock;
 
     Value ()
     {
         this.value = 0;
-        this.lock = new ReentrantLock();
     }
 
     public String toString()
     {
         return "(" + this.value + ")";
-    }
-}
-
-class Max extends Thread
-{
-    private int [] array; 
-    public int max;
-
-    Max (int [] array)
-    {
-        this.array = array;
-        this.max = Integer.MIN_VALUE;
-    }
-
-    public void run()
-    {
-        for (int i = 0; i < this.array.length; i++)
-        {
-            if (this.array[i] > this.max)
-            {
-                this.max = this.array[i];
-            }
-        }
-    }
-}
-
-class Min extends Thread
-{
-    private int [] array; 
-    public int min;
-
-    Min (int [] array)
-    {
-        this.array = array;
-        this.min = Integer.MAX_VALUE;
-    }
-
-    public void run()
-    {
-        for (int i = 0; i < this.array.length; i++)
-        {
-            if (this.array[i] < this.min)
-            {
-                this.min = this.array[i];                
-            }
-        }
     }
 }
 
@@ -87,15 +39,7 @@ public class BucketSort extends Thread
     {   
         this.start = start;
         this.end = end;
-
-        // System.out.println("start: " + this.start);
-        // System.out.println("end: " + this.end);
     }
-    
-    // public void run()
-    // {
-    //     this.bucket[this.key].value++; 
-    // }
 
     public void run()
     {
@@ -118,23 +62,15 @@ public class BucketSort extends Thread
         }
     }
 
-    public void maximum(int [] array)
+    public void maxmin(int [] array)
     {
-        this.max = Integer.MIN_VALUE;
         for (int i = 0; i < array.length; i++)
         {
             if (array[i] > this.max)
             {
                 this.max = array[i];
             }
-        }
-    }
 
-    public void minimum(int [] array)
-    {
-        this.min = Integer.MAX_VALUE;
-        for (int i = 0; i < array.length; i++)
-        {
             if (array[i] < this.min)
             {
                 this.min = array[i];                
@@ -144,13 +80,10 @@ public class BucketSort extends Thread
 
     public void sortSequential(int [] array)
     {
-        // Both O(n)
-        maximum(array);
-        minimum(array);
+        maxmin(array);
 
         int bucketSize = this.max - this.min + 1;
         
-        // O(m)
         this.bucket = new Value[bucketSize];
 
         for (int i = 0; i < bucketSize; i++)
@@ -158,7 +91,6 @@ public class BucketSort extends Thread
             this.bucket[i] = new Value();
         }
 
-        // O(n)
         for (int i = 0; i < array.length; i++)
         {
             int k = array[i] - min;
@@ -167,7 +99,6 @@ public class BucketSort extends Thread
 
         int j = 0;
         
-        // O(m)
         for (int i = 0; i < this.bucket.length; i++)
         {
             while (this.bucket[i].value > 0)
@@ -182,23 +113,16 @@ public class BucketSort extends Thread
     public void sort(int [] array) throws InterruptedException
     {
         this.array = array;
-
-        Max tmax = new Max(array);
-        Min tmin = new Min(array);
-        tmax.start();
-        tmin.start();
-        tmax.join();
-        tmin.join();
-
-        this.max = tmax.max;
-        this.min = tmin.min;
+        maxmin(array);
 
         int bucketSize = this.max - this.min + 1;
 
         this.bucket = new Value[bucketSize];
         
         for (int i = 0; i < this.bucket.length; i++)
+        {
             this.bucket[i] = new Value();
+        }
         
         int numThreads = Runtime.getRuntime().availableProcessors();
         BucketSort [] threads = null;
@@ -228,10 +152,10 @@ public class BucketSort extends Thread
             }
         }
 
-        // for (BucketSort thread: threads)
-        // {
-        //     thread.join();
-        // }
+        for (BucketSort thread: threads)
+        {
+            thread.join();
+        }
 
         int j = 0;
 
