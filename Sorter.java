@@ -8,6 +8,9 @@ public class Sorter {
     // Call concurrent shell sort
     public static <T extends Comparable<? super T>> void concurrentShellSort(List<T> list) throws InterruptedException{ ShellSort.concurrentShellSort(list); }
 
+    // Call concurrent bubble sort
+    public static <T extends Comparable<? super T>> void concurrentBubbleSort(List<T> list) { BubbleSort.concurrentBubbleSort(list); }
+
     // Check if list is sorted
     public static <T extends Comparable<? super T>> boolean isSorted(List<T> list)
     {       
@@ -17,21 +20,15 @@ public class Sorter {
         return true;
     }
 
-      /* public static void main (String[] args) throws InterruptedException{
-        //int[] test = {2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15};
-        System.out.println("Testing...");
-        final int testNum = 5000000;
-        ArrayList<Integer> test = new ArrayList<Integer>();
+    public static void main (String[] args) {
+        int arraySize = (int)300;
+        List<Integer> arr = new ArrayList<Integer>();
         Random rand = new Random();
-        for (int i = 0; i < testNum; i++) {
-            test.add(rand.nextInt(testNum));//test.add(rand.nextInt(testNum));
+        for (int i = 0; i < arraySize; i ++) {
+            arr.add(rand.nextInt(arraySize));
         }
-
-        Sorter.concurrentShellSort(test);
-       // Sorter.shellSort(test);
-        //Sorter.shellSort(test);
-        //System.out.println(test);
-        System.out.println(Sorter.isSorted(test));
-
-    } */
+        System.out.println(arr);
+        Sorter.concurrentBubbleSort(arr);
+        System.out.println(arr);
+    }
 }

@@ -59,7 +59,7 @@ public class ShellSort <T extends Comparable<? super T>> extends Thread {
         pool.shutdown();
 
         try {
-            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) 
+            if (!pool.awaitTermination(60000, TimeUnit.SECONDS)) 
                 pool.shutdownNow();     
         } catch (InterruptedException e) {
             pool.shutdownNow();
