@@ -27,18 +27,18 @@ class Sort <T extends Comparable<? super T>> implements Runnable
 
 public class BubbleSort 
 { 
-    static void bubbleSort(int arr[]) 
+    public static <T extends Comparable<? super T>> void bubbleSort(List<T> arr) 
     { 
         //System.out.println(Arrays.toString(arr));
-        int n = arr.length; 
+        int n = arr.size(); 
         for (int i = 0; i < n-1; i++) 
             for (int j = 0; j < n-i-1; j++) 
-                if (arr[j] > arr[j+1]) 
+                if (arr.get(j).compareTo(arr.get(j+1)) > 0) 
                 { 
                     
-                    int temp = arr[j]; 
-                    arr[j] = arr[j+1]; 
-                    arr[j+1] = temp; 
+                    T temp = arr.get(j); 
+                    arr.set(j, arr.get(j+1));
+                    arr.set(j+1, temp);
                 } 
                 //System.out.println(Arrays.toString(arr));
     }
