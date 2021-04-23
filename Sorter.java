@@ -14,21 +14,8 @@ public class Sorter {
     // Check if list is sorted
     public static <T extends Comparable<? super T>> boolean isSorted(List<T> list)
     {       
-        for (int i = 1; i < list.size(); i++) {
-            if (list.get(i-1).compareTo(list.get(i)) > 0) return false;
-        }
+        for (int i = 1; i < list.size(); i++) 
+            if (list.get(i-1).compareTo(list.get(i)) > 0) return false;    
         return true;
-    }
-
-    public static void main (String[] args) {
-        int arraySize = (int)300;
-        List<Integer> arr = new ArrayList<Integer>();
-        Random rand = new Random();
-        for (int i = 0; i < arraySize; i ++) {
-            arr.add(rand.nextInt(arraySize));
-        }
-        System.out.println(arr);
-        Sorter.concurrentBubbleSort(arr);
-        System.out.println(arr);
     }
 }
