@@ -6,7 +6,7 @@ public class ShellSort <T extends Comparable<? super T>> extends Thread {
     private List<T> arr;
 
     public ShellSort(List<T> arr) { 
-        this.arr = arr;
+        this.arr = arr; 
     }
 
     @Override
