@@ -116,16 +116,16 @@ public class MergeSort extends Thread
         }
 
         int low = 0;
-        int mid = threadSize;
+        int mid = threadSize-1;
         int high = 2 * threadSize - 1;
         merge(arr, low, mid, high);
 
         low = 2 *threadSize;
-        mid = 3 * threadSize;
+        mid = 3 * threadSize-1;
         high = arr.length - 1;
         merge(arr, low, mid, high);
 
-        merge(arr, 0, low, high);
+        merge(arr, 0, low-1, high);
 
         
     }
