@@ -22,8 +22,7 @@ class SelectionSort implements Callable<ArrayList<Integer>>
         List<Integer> values = new ArrayList<>();
         // Find all values in the range
         for (int v: arr) {
-            if (v >= low) values.add(v);
-            if (v < high) values.add(v);
+            if (v >= low && v < high) values.add(v);
         }
 
         int numValues = values.size();
