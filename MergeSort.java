@@ -93,7 +93,7 @@ public class MergeSort<T extends Comparable<? super T>> extends Thread
     /* A utility function to print array of size n */
     static <T extends Comparable<? super T>> void printArray(List<T> arr)
     {
-        int n = arr.length;
+        int n = arr.size();
         for (int i = 0; i < n; ++i)
             System.out.print(arr.get(i) + " ");
         System.out.println();
@@ -102,12 +102,12 @@ public class MergeSort<T extends Comparable<? super T>> extends Thread
 
     static <T extends Comparable<? super T>>void concurrentSort(List<T> arr) throws InterruptedException{
         MergeSort[] threads = new MergeSort[4];
-        int threadSize = arr.length / 4;
+        int threadSize = arr.size() / 4;
         for (int i = 0; i < 4; i++){
             int low = i * threadSize;
             int high = (i +1)* threadSize - 1;
-            if (high > arr.length)
-                high = arr.length;
+            if (high > arr.size())
+                high = arr.size();
 
             threads[i] = new MergeSort(arr, low, high);
             threads[i].start();
@@ -124,7 +124,7 @@ public class MergeSort<T extends Comparable<? super T>> extends Thread
 
         low = 2 *threadSize;
         mid = 3 * threadSize-1;
-        high = arr.length - 1;
+        high = arr.size() - 1;
         merge(arr, low, mid, high);
 
         merge(arr, 0, low-1, high);
