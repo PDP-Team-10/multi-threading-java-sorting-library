@@ -4,12 +4,14 @@ import java.util.Collections;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-class Sort implements Runnable
-{   int arr[];
+class Sort <T extends Comparable<? super T>> implements Runnable
+{   List<T> arr;
     int mid;
     boolean direction;
-    public Sort(int arr[], int mid, boolean direction)
+    public Sort(List<T> arr, int mid, boolean direction)
     {
         this.arr = arr;
         this.mid = mid;
@@ -25,46 +27,46 @@ class Sort implements Runnable
 
 public class BubbleSort 
 { 
-    static void bubbleSort(int arr[]) 
+    public static <T extends Comparable<? super T>> void bubbleSort(List<T> arr) 
     { 
         //System.out.println(Arrays.toString(arr));
-        int n = arr.length; 
+        int n = arr.size(); 
         for (int i = 0; i < n-1; i++) 
             for (int j = 0; j < n-i-1; j++) 
-                if (arr[j] > arr[j+1]) 
+                if (arr.get(j).compareTo(arr.get(j+1)) > 0) 
                 { 
                     
-                    int temp = arr[j]; 
-                    arr[j] = arr[j+1]; 
-                    arr[j+1] = temp; 
+                    T temp = arr.get(j); 
+                    arr.set(j, arr.get(j+1));
+                    arr.set(j+1, temp);
                 } 
                 //System.out.println(Arrays.toString(arr));
     }
 
-    static void directionalBubbleSort(int arr[], int mid, boolean direction) 
+    static <T extends Comparable<? super T>> directionalBubbleSort(List<T> arr, int mid, boolean direction) 
     { 
-        int n = arr.length;
+        int n = arr.size();
         if(direction){
             for (int i = 0; i < mid; i++) 
             for (int j = 0; j < n-i-1; j++) 
-                if (arr[j] > arr[j+1]) 
+                if (arr.get(j).compareTo(arr.get(j+1)) > 0) 
                    { 
                    
-                       int temp = arr[j]; 
-                       arr[j] = arr[j+1]; 
-                      arr[j+1] = temp; 
+                        T temp = arr.get(j); 
+                        arr.set(j, arr.get(j+1));
+                        arr.set(j+1, temp);
                   } 
             
         }
         else{
             for (int i = 0; i < mid; i++) 
             for (int j = 0; j < n-i-1; j++) 
-                if (arr[j] < arr[j+1]) 
+                if (arr.get(j).compareTo(arr.get(j+1)) < 0) 
                    { 
                    
-                       int temp = arr[j]; 
-                       arr[j] = arr[j+1]; 
-                      arr[j+1] = temp; 
+                    T temp = arr.get(j); 
+                    arr.set(j, arr.get(j+1));
+                    arr.set(j+1, temp);
                   } 
 
         }
@@ -73,14 +75,14 @@ public class BubbleSort
     
     
 
-    static void concurrentBubbleSort(int arr[])
+    public static <T extends Comparable<? super T>> void concurrentBubbleSort(List<T> arr)
     {   
         //System.out.println(Arrays.toString(arr));
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        int length = arr.length;
+        int length = arr.size();
         int mid = length / 2;
-        int arr1[] = Arrays.copyOfRange(arr,0,length);
-        int arr2[] = Arrays.copyOfRange(arr, 0, length);
+        List<T> arr1 = arr.subList(0, length);//List<T> arr1 = arr.clone();
+        List<T> arr2 = arr.subList(0, length);//List<T> arr2 = arr.clone();
         executor.submit(new Sort(arr1, mid, true));
         executor.submit(new Sort(arr2, length - mid, false));
         
@@ -90,16 +92,23 @@ public class BubbleSort
         //Collections.reverse(Arrays.asList(arr2));
         //System.out.println(Arrays.toString(arr2));
         
-        for(int i = 0; i < length - mid - 1; i++)
-            arr[i] = arr2[length - i - 1];
+        executor.shutdown();
 
-        for(int i = length - mid; i < length; i++)
-        arr[i] = arr1[i];
+        try {
+            if (!executor.awaitTermination(60000, TimeUnit.SECONDS)) 
+                executor.shutdownNow();     
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        } finally {
+            for(int i = 0; i < length - mid - 1; i++)
+                arr.set(i,arr2.get(length - i - 1));
+
+            for(int i = length - mid; i < length; i++)
+                arr.set(i,arr1.get(i));
+        }
+        
 
         //System.out.println(Arrays.toString(arr));
-
-
-
 
     }
 }
