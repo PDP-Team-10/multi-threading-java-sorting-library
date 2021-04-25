@@ -1,9 +1,12 @@
-public class QuickSort extends Thread{
+import java.util.ArrayList;
+import java.util.List;
+
+public class QuickSort<T extends Comparable<? super T>> extends Thread{
     
     private int begin, end;
-    private int[] arr;
+    private List<T> arr;
     
-    public QuickSort(int[] arr, int l, int r){
+    public QuickSort(List<T> arr, int l, int r){
         this.arr = arr;
         this.begin = l;
         this.end = r;
@@ -19,7 +22,7 @@ public class QuickSort extends Thread{
     this is a simple sequential quick sort algorithm made for java created by baeldung
     @https://www.baeldung.com/java-quicksort
     */
-    public static void quickSort(int arr[], int begin, int end) {
+    public static <T extends Comparable<? super T>> void quickSort(List<T> arr, int begin, int end) {
         if (begin < end) {
             int partitionIndex = partition(arr, begin, end);
     
@@ -28,37 +31,37 @@ public class QuickSort extends Thread{
         }
     }
 
-    private static int partition(int arr[], int begin, int end) {
-        int pivot = arr[end];
+    private static <T extends Comparable<? super T>> int partition(List<T> arr, int begin, int end) {
+        T pivot = arr.get(end);
         int i = (begin-1);
     
         for (int j = begin; j < end; j++) {
-            if (arr[j] <= pivot) {
+            if (arr.get(j).compareTo(pivot) <= 0) {
                 i++;
     
-                int swapTemp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = swapTemp;
+                T swapTemp = arr.get(i);
+                arr.set(i, arr.get(j));
+                arr.set(j, swapTemp);
             }
         }
     
-        int swapTemp = arr[i+1];
-        arr[i+1] = arr[end];
-        arr[end] = swapTemp;
+        T swapTemp = arr.get(i+1);
+        arr.set(i+1, arr.get(end));
+        arr.set(end, swapTemp);
     
         return i+1;
     }
 
 
 
-    static void concurrentSort(int[] arr) throws InterruptedException{
+    static <T extends Comparable<? super T>> void concurrentSort(List<T> arr) throws InterruptedException{
         QuickSort[] threads = new QuickSort[4];
-        int threadSize = arr.length / 4;
+        int threadSize = arr.size() / 4;
         for (int i = 0; i < 4; i++){
             int low = i * threadSize;
             int high = (i +1)* threadSize - 1;
-            if (high > arr.length)
-                high = arr.length;
+            if (high > arr.size())
+                high = arr.size();
 
             threads[i] = new QuickSort(arr, low, high);
             threads[i].start();
@@ -75,7 +78,7 @@ public class QuickSort extends Thread{
 
         low = 2 *threadSize;
         mid = 3 * threadSize-1;
-        high = arr.length - 1;
+        high = arr.size() - 1;
         merge(arr, low, mid, high);
 
         merge(arr, 0, low-1, high);
@@ -83,50 +86,51 @@ public class QuickSort extends Thread{
         
     }
 
-    static void merge(int arr[], int l, int m, int r)
+    static <T extends Comparable<? super T>> void merge(List<T> arr, int l, int m, int r)
     {
         // Find sizes of two subarrays to be merged
         int n1 = m - l + 1;
         int n2 = r - m;
-
+ 
         /* Create temp arrays */
-        int L[] = new int[n1];
-        int R[] = new int[n2];
-
+        ArrayList<T> L =  new ArrayList<T>();
+        ArrayList<T> R =  new ArrayList<T>();
+ 
         /*Copy data to temp arrays*/
         for (int i = 0; i < n1; ++i)
-            L[i] = arr[l + i];
+            L.add(i, arr.get(l+i));
         for (int j = 0; j < n2; ++j)
-            R[j] = arr[m + 1 + j];
-
+            L.add(j, arr.get(m + 1 + j));
+ 
         /* Merge the temp arrays */
+ 
         // Initial indexes of first and second subarrays
         int i = 0, j = 0;
-
+ 
         // Initial index of merged subarry array
         int k = l;
         while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
-                arr[k] = L[i];
+            if (L.get(i).compareTo(R.get(j)) <= 0) {
+                arr.set(k, L.get(i));
                 i++;
             }
             else {
-                arr[k] = R[j];
+                arr.set(k, R.get(j));
                 j++;
             }
             k++;
         }
-
+ 
         /* Copy remaining elements of L[] if any */
         while (i < n1) {
-            arr[k] = L[i];
+            arr.set(k, L.get(i));
             i++;
             k++;
         }
-
+ 
         /* Copy remaining elements of R[] if any */
         while (j < n2) {
-            arr[k] = R[j];
+            arr.set(k, R.get(j));
             j++;
             k++;
         }

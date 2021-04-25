@@ -22,6 +22,18 @@ public class Sorter {
         b.sort(list);
     }
 
+    // Call sequintial Merge Sort
+    public static <T extends Comparable<? super T>> void mergeSort(List<T> list) { MergeSort.sort(list, 0, list.size() -1); }
+
+    // Call concurrent merge sort
+    public static <T extends Comparable<? super T>> void concurrentMergeSort(List<T> list) throws InterruptedException{ MergeSort.concurrentSort(list); }
+
+    // Call sequential quick sort
+    public static <T extends Comparable<? super T>> void quickSort(List<T> list) { QuickSort.quickSort(list, 0, list.size() -1); }
+
+    // Call concurrent quick sort
+    public static <T extends Comparable<? super T>> void concurrentQuickSort(List<T> list) throws InterruptedException{ QuickSort.concurrentSort(list); }
+
     // Check if list is sorted
     public static <T extends Comparable<? super T>> boolean isSorted(List<T> list)
     {       
