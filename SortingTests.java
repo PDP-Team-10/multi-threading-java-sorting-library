@@ -1,7 +1,5 @@
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
-import java.util.ArrayList;
 
 public class SortingTests {
     
@@ -105,6 +103,48 @@ public class SortingTests {
         checkSortedList(descendingArray, arrayCopy);
 
         // Quick sort
+        System.out.println("[ Quick sort ]");
+        // Sequential
+        System.out.println("-\tSequential:");
+
+        arrayCopy = ascendingArray.clone();
+        startTime = System.currentTimeMillis();
+        QuickSort.quickSort(arrayCopy, 0, arrayCopy.length-1);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = shuffledArray.clone();
+        startTime = System.currentTimeMillis();
+        QuickSort.quickSort(arrayCopy, 0, arrayCopy.length-1);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = descendingArray.clone();
+        startTime = System.currentTimeMillis();
+        QuickSort.quickSort(arrayCopy, 0, arrayCopy.length-1);
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
+
+        // Parallel
+        System.out.println("-\tParallel:");
+
+        arrayCopy = ascendingArray.clone();
+        startTime = System.currentTimeMillis();
+        //sort it
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = shuffledArray.clone();
+        startTime = System.currentTimeMillis();
+        //sort it
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+
+        arrayCopy = descendingArray.clone();
+        startTime = System.currentTimeMillis();
+        //sort it
+        endTime = System.currentTimeMillis();
+        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
 
        
         // Bubble sort
@@ -157,21 +197,7 @@ public class SortingTests {
         checkSortedList(descendingArray, arrayCopy);
 
         
-        // Insertion sort Parallel
-        System.out.println("[Shell Sort]");
-        System.out.println("-\tSequential:");
-        ArrayList<Integer> listCopy =  new ArrayList<Integer>();
-        for (int i = 0; i < ascendingArray.length; i++)
-            listCopy.add(ascendingArray[i]);
-        startTime = System.currentTimeMillis();
-        try {Sorter.concurrentShellSort(listCopy);}
-        catch (InterruptedException e) {}
-        
-        endTime = System.currentTimeMillis();
-        int[] copy = new int[listCopy.size()];
-        for (int i = 0; i < listCopy.size(); i++)
-            copy[i] = listCopy.get(i);
-        checkSortedList(ascendingArray, copy);
+        // Insertion sort
 
         // Selection sort
         System.out.println("[Selection Sort]");
@@ -223,78 +249,78 @@ public class SortingTests {
         checkSortedList(descendingArray, arrayCopy);
 
         // Bucket sort
-        System.out.println("[Bucket Sort]");
-        System.out.println("-\tSequential:");
-        BucketSort b = new BucketSort();
+        // System.out.println("[Bucket Sort]");
+        // System.out.println("-\tSequential:");
+        // BucketSort b = new BucketSort();
 
-        arrayCopy = ascendingArray.clone();
-        startTime = System.currentTimeMillis();
-        b.sortSequential(arrayCopy);
-        endTime = System.currentTimeMillis();
-        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
-        checkSortedList(ascendingArray, arrayCopy);
+        // arrayCopy = ascendingArray.clone();
+        // startTime = System.currentTimeMillis();
+        // b.sortSequential(arrayCopy);
+        // endTime = System.currentTimeMillis();
+        // System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+        // checkSortedList(ascendingArray, arrayCopy);
 
-        arrayCopy = shuffledArray.clone();
-        startTime = System.currentTimeMillis();
-        b.sortSequential(arrayCopy);
-        endTime = System.currentTimeMillis();
-        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
-        checkSortedList(shuffledArray, arrayCopy);
+        // arrayCopy = shuffledArray.clone();
+        // startTime = System.currentTimeMillis();
+        // b.sortSequential(arrayCopy);
+        // endTime = System.currentTimeMillis();
+        // System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+        // checkSortedList(shuffledArray, arrayCopy);
 
-        arrayCopy = descendingArray.clone();
-        startTime = System.currentTimeMillis();
-        b.sortSequential(arrayCopy);
-        endTime = System.currentTimeMillis();
-        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
-        checkSortedList(descendingArray, arrayCopy);
+        // arrayCopy = descendingArray.clone();
+        // startTime = System.currentTimeMillis();
+        // b.sortSequential(arrayCopy);
+        // endTime = System.currentTimeMillis();
+        // System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
+        // checkSortedList(descendingArray, arrayCopy);
 
-        // Parallel
-        System.out.println("-\tParallel:");
+        // // Parallel
+        // System.out.println("-\tParallel:");
 
-        arrayCopy = ascendingArray.clone();
-        startTime = System.currentTimeMillis();
-        // sort the array
-        try
-        {
-            b.sort(arrayCopy);
-        }
-        catch (InterruptedException e)
-        {
-            System.err.println(e);
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
-        checkSortedList(ascendingArray, arrayCopy);
+        // arrayCopy = ascendingArray.clone();
+        // startTime = System.currentTimeMillis();
+        // // sort the array
+        // try
+        // {
+        //     b.sort(arrayCopy);
+        // }
+        // catch (InterruptedException e)
+        // {
+        //     System.err.println(e);
+        // }
+        // endTime = System.currentTimeMillis();
+        // System.out.println("\tSorted ascending array in\t" + (endTime - startTime) + " ms");
+        // checkSortedList(ascendingArray, arrayCopy);
 
-        arrayCopy = shuffledArray.clone();
-        startTime = System.currentTimeMillis();
-        // sort the array
-        try
-        {
-            b.sort(arrayCopy);
-        }
-        catch (InterruptedException e)
-        {
-            System.err.println(e);
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
-        checkSortedList(shuffledArray, arrayCopy);
+        // arrayCopy = shuffledArray.clone();
+        // startTime = System.currentTimeMillis();
+        // // sort the array
+        // try
+        // {
+        //     b.sort(arrayCopy);
+        // }
+        // catch (InterruptedException e)
+        // {
+        //     System.err.println(e);
+        // }
+        // endTime = System.currentTimeMillis();
+        // System.out.println("\tSorted shuffled array in\t" + (endTime - startTime) + " ms");
+        // checkSortedList(shuffledArray, arrayCopy);
 
-        arrayCopy = descendingArray.clone();
-        startTime = System.currentTimeMillis();
-        // sort the array
-        try
-        {
-            b.sort(arrayCopy);
-        }
-        catch (InterruptedException e)
-        {
-            System.err.println(e);
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
-        checkSortedList(descendingArray, arrayCopy);
+        // arrayCopy = descendingArray.clone();
+        // startTime = System.currentTimeMillis();
+        // // sort the array
+        // try
+        // {
+        //     b.sort(arrayCopy);
+        // }
+        // catch (InterruptedException e)
+        // {
+        //     System.err.println(e);
+        // }
+        // endTime = System.currentTimeMillis();
+        // System.out.println("\tSorted descending array in\t" + (endTime - startTime) + " ms");
+        // checkSortedList(descendingArray, arrayCopy);
 
         
     }
