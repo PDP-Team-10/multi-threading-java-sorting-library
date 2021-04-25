@@ -1,5 +1,7 @@
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.ArrayList;
 
 public class SortingTests {
     
@@ -155,7 +157,21 @@ public class SortingTests {
         checkSortedList(descendingArray, arrayCopy);
 
         
-        // Insertion sort
+        // Insertion sort Parallel
+        System.out.println("[Shell Sort]");
+        System.out.println("-\tSequential:");
+        ArrayList<Integer> listCopy =  new ArrayList<Integer>();
+        for (int i = 0; i < ascendingArray.length; i++)
+            listCopy.add(ascendingArray[i]);
+        startTime = System.currentTimeMillis();
+        try {Sorter.concurrentShellSort(listCopy);}
+        catch (InterruptedException e) {}
+        
+        endTime = System.currentTimeMillis();
+        int[] copy = new int[listCopy.size()];
+        for (int i = 0; i < listCopy.size(); i++)
+            copy[i] = listCopy.get(i);
+        checkSortedList(ascendingArray, copy);
 
         // Selection sort
         System.out.println("[Selection Sort]");
