@@ -17,7 +17,8 @@ public class SortingTests {
         
         
         System.out.println("Comparison of execution time for sequential and multi-threaded sorting algorithms\n");
-        ShellSort.testShellSort(arraySize);
+        //ShellSort.testShellSort(arraySize);
+        QuickSort.testQuickSort(arraySize);
         in.close();
     }
 }
