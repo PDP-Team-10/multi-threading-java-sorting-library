@@ -258,10 +258,6 @@ public class BucketSort extends Thread
             shuffledTime = endTime - startTime;
             isSortedShuffled = Sorter.isSorted(arrayCopy);
 
-            System.out.println("Ascending Array:" + isSortedAscending);
-            System.out.println("Descending Array:" + isSortedDescending);
-            System.out.println("Shuffle Array:" + isSortedShuffled);
-
             concurrentWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
             System.out.println("---concurrent sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled) + "\n");
 
