@@ -39,6 +39,12 @@ public class Sorter {
         BucketSort b = new BucketSort();
         b.sort(list);
     }
+    
+    // Call sequential selection sort
+    public static void selectionSort(List<Integer> list) { SelectionSort.selectionSort(list); }
+
+    // Call concurrent selection sort
+    public static void concurrentSelectionSort(List<Integer> list) { SelectionSort.concurrentSelectionSort(list); }
 
     // Check if list is sorted
     public static <T extends Comparable<? super T>> boolean isSorted(List<T> list)

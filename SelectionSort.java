@@ -5,66 +5,59 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.Random;
+import java.io.FileWriter;  
+import java.io.IOException;
 
 class SelectionSort implements Callable<ArrayList<Integer>>
 {
-    private int[] arr;
+    private List<Integer> list;
     private int low;
     private int high;
 
-    public SelectionSort(int[] arr, int low, int high) {
-        this.arr = arr;
+    public SelectionSort(List<Integer> list, int low, int high) {
+        this.list = list;
         this.low = low;
         this.high = high;
     }
 
     public ArrayList<Integer> call() {
-        List<Integer> values = new ArrayList<>();
+        ArrayList<Integer> values = new ArrayList<>();
         // Find all values in the range
-        for (int v: arr) {
+        for (int v: list) {
             if (v >= low && v < high) values.add(v);
         }
 
-        int numValues = values.size();
-        int[] intValues = new int[numValues];
-        for (int i = 0; i < numValues; i++) {
-            intValues[i] = values.get(i);
-        }
         // Sort the values
-        selectionSort(intValues);
-
-        ArrayList<Integer> sortedValues = new ArrayList<>();
-        for (int v: intValues) {
-            sortedValues.add(v);
-        }
-        return sortedValues;
+        selectionSort(values);
+        return values;
     }
 
-    public static void selectionSort(int[] arr)
+    public static void selectionSort(List<Integer> list)
     {
-        int n = arr.length;
+        int n = list.size();
         for (int i = 0; i < n - 1; i++)
         {
             int min = i;
             
             for (int j = i+1; j < n; j++)
-                if (arr[j] < arr[min])
+                if (list.get(j) < list.get(min))
                     min = j;
                     
-            int temp = arr[min];
-            arr[min] = arr[i];
-            arr[i] = temp;
+            int temp = list.get(min);
+            list.set(min, list.get(i));
+            list.set(i, temp);
         }
     }
 
-    public static void concurrentSelectionSort(int[] arr) {
-        int n = arr.length;
+    public static void concurrentSelectionSort(List<Integer> list) {
+        int n = list.size();
         int k = 4;  // Number of threads
 
         // Find range of values
-        int minValue = arr[0];
-        int maxValue = arr[0];
-        for (int v: arr) {
+        int minValue = list.get(0);
+        int maxValue = list.get(0);
+        for (int v: list) {
             if (v < minValue) minValue = v;
             if (v > maxValue) maxValue = v;
         }
@@ -75,7 +68,7 @@ class SelectionSort implements Callable<ArrayList<Integer>>
         int threadRange = (maxValue - minValue) / k;
         for (int i = 0; i < k; i++) {
             // Remainder values designated to last thread
-            SelectionSort task = new SelectionSort(arr, minValue + i * threadRange, (i == k - 1) ? maxValue + 1 : minValue + (i + 1) * threadRange);
+            SelectionSort task = new SelectionSort(list, minValue + i * threadRange, (i == k - 1) ? maxValue + 1 : minValue + (i + 1) * threadRange);
             futures.add(executor.submit(task));
         }
         executor.shutdown();
@@ -97,7 +90,106 @@ class SelectionSort implements Callable<ArrayList<Integer>>
         }
         // Override original array
         for (int i = 0; i < n; i++) {
-            arr[i] = sortedList.get(i);
+            list.set(i, sortedList.get(i));
         }
+    }
+
+    public static void testSelectionSort(int arraySize) throws IOException, InterruptedException{
+        ArrayList<Integer> ascendingArray = new ArrayList<Integer>();
+        ArrayList<Integer> descendingArray = new ArrayList<Integer>();
+        ArrayList<Integer> shuffledArray = new ArrayList<Integer>();
+
+        FileWriter sequentialWriter = new FileWriter("sequential-selection-sort-results.txt");
+        FileWriter concurrentWriter = new FileWriter("concurrent-selection-sort-results.txt");
+        sequentialWriter.write("size\tascending(MS)\tdescending(MS)\tshuffled(MS)\n");
+        concurrentWriter.write("size\tascending(MS)\tdescending(MS)\tshuffled(MS)\n");
+
+        // Record start and end times
+        long startTime;
+        long endTime;
+        long ascendingTime;
+        long descendingTime;
+        long shuffledTime;
+
+        // Record whether the sorts were done correctly
+        boolean isSortedAscending;
+        boolean isSortedDescending;
+        boolean isSortedShuffled;
+        
+        Random rand = new Random();
+        System.out.println("testing selection sort...");
+
+        for (int iter = 0; iter < 10; iter++) {
+            for (int i = 0; i < arraySize * (iter + 1); i++) 
+                ascendingArray.add(i);
+        
+            for (int i = 0; i < arraySize * (iter + 1); i ++) 
+                shuffledArray.add(rand.nextInt(arraySize * (iter + 1)));
+            
+            
+            for (int i = 0; i < arraySize * (iter + 1); i++) 
+                descendingArray.add(arraySize * (iter + 1) - i - 1);
+
+            System.out.println("Iteration " + iter + ": testing on input of size " + arraySize * (iter + 1));
+
+            // Test sequential
+            ArrayList arrayCopy = (ArrayList) ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.selectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            ascendingTime = endTime - startTime;
+            isSortedAscending = true;
+
+            arrayCopy = (ArrayList) descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.selectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            descendingTime = endTime - startTime;
+            isSortedDescending = true;
+
+            arrayCopy = (ArrayList) shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.selectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            shuffledTime = endTime - startTime;
+            isSortedShuffled = Sorter.isSorted(arrayCopy);
+
+            sequentialWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
+            System.out.println("---sequential sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled));
+
+            // Test concurrent
+            arrayCopy = (ArrayList) ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.concurrentSelectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            ascendingTime = endTime - startTime;
+            isSortedAscending = true;
+
+            arrayCopy = (ArrayList) descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.concurrentSelectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            descendingTime = endTime - startTime;
+            isSortedDescending = true;
+
+            arrayCopy = (ArrayList) shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.concurrentSelectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            shuffledTime = endTime - startTime;
+            isSortedShuffled = Sorter.isSorted(arrayCopy);
+
+            concurrentWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
+            System.out.println("---concurrent sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled) + "\n");
+
+            ascendingArray.clear();
+            descendingArray.clear();
+            shuffledArray.clear();
+            
+
+        }    
+        sequentialWriter.close();
+        concurrentWriter.close();
+        System.out.println("Results written to files.");
     }
 }
