@@ -97,6 +97,8 @@ public class BubbleSort
         //System.out.println(Arrays.toString(arr2));
         
         executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.HOURS);
+
 
         try {
             if (!executor.awaitTermination(60000, TimeUnit.SECONDS)) 
@@ -104,7 +106,7 @@ public class BubbleSort
         } catch (InterruptedException e) {
             executor.shutdownNow();
         } finally {
-            for(int i = 0; i < length - mid - 1; i++)
+            for(int i = 0; i < length - mid; i++)
                 arr.set(i,arr2.get(length - i - 1));
 
             for(int i = length - mid; i < length; i++)
