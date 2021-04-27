@@ -9,6 +9,7 @@ Navigate to project folder in terminal
 
 To compile and run the file:
 
+`javac ShellSort.java`
 `javac SortingTests.java`
 
 `java SortingTests`
