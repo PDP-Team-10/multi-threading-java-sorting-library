@@ -6,28 +6,12 @@ import java.lang.reflect.Array;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-// Value Object: Contains an integer and lock
-class Value
-{
-    public Integer value;
-
-    Value ()
-    {
-        this.value = 0;
-    }
-
-    public String toString()
-    {
-        return "(" + this.value + ")";
-    }
-}
-
 public class BucketSort extends Thread
 {
     private Integer start, end;
     private static Integer min, max;
     private static List<Integer> array;
-    private static Value [] bucket;
+    private static int [] bucket;
 
     BucketSort ()
     {
@@ -46,7 +30,7 @@ public class BucketSort extends Thread
         for (int i = this.start; i < this.end; i++)
         {
             int k = this.array.get(i) - this.min;
-            this.bucket[k].value++;
+            this.bucket[k]++;
         }
     }
 
@@ -73,26 +57,21 @@ public class BucketSort extends Thread
 
         int bucketSize = this.max - this.min + 1;
         
-        this.bucket = new Value[bucketSize];
-
-        for (int i = 0; i < bucketSize; i++)
-        {
-            this.bucket[i] = new Value();
-        }
+        this.bucket = new int[bucketSize];
 
         for (int i = 0; i < this.array.size(); i++)
         {
             int k = this.array.get(i) - this.min;
-            this.bucket[k].value++;
+            this.bucket[k]++;
         }
 
         int j = 0;
         
         for (int i = 0; i < this.bucket.length; i++)
         {
-            while (this.bucket[i].value > 0)
+            while (this.bucket[i] > 0)
             {
-                this.bucket[i].value--;
+                this.bucket[i]--;
                 this.array.set(j, i + min);
                 j++;
             }
@@ -106,12 +85,7 @@ public class BucketSort extends Thread
 
         int bucketSize = this.max - this.min + 1;
 
-        this.bucket = new Value[bucketSize];
-        
-        for (int i = 0; i < this.bucket.length; i++)
-        {
-            this.bucket[i] = new Value();
-        }
+        this.bucket = new int[bucketSize];
         
         int numThreads = Runtime.getRuntime().availableProcessors();
         BucketSort [] threads = null;
@@ -150,9 +124,9 @@ public class BucketSort extends Thread
 
         for (int i = 0; i < bucket.length; i++)
         {
-            while (bucket[i].value > 0)
+            while (bucket[i] > 0)
             {
-                bucket[i].value--;
+                bucket[i]--;
                 this.array.set(j, i + min);
                 j++;
             }
