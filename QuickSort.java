@@ -103,7 +103,7 @@ public class QuickSort<T extends Comparable<? super T>> extends Thread{
         for (int i = 0; i < n1; ++i)
             L.add(i, arr.get(l+i));
         for (int j = 0; j < n2; ++j)
-            L.add(j, arr.get(m + 1 + j));
+            R.add(j, arr.get(m + 1 + j));
  
         /* Merge the temp arrays */
  
