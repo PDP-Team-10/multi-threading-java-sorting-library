@@ -5,6 +5,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.Random;
+import java.io.FileWriter;  
+import java.io.IOException;
 
 class SelectionSort implements Callable<ArrayList<Integer>>
 {
@@ -89,5 +92,104 @@ class SelectionSort implements Callable<ArrayList<Integer>>
         for (int i = 0; i < n; i++) {
             list.set(i, sortedList.get(i));
         }
+    }
+
+    public static void testSelectionSort(int arraySize) throws IOException, InterruptedException{
+        ArrayList<Integer> ascendingArray = new ArrayList<Integer>();
+        ArrayList<Integer> descendingArray = new ArrayList<Integer>();
+        ArrayList<Integer> shuffledArray = new ArrayList<Integer>();
+
+        FileWriter sequentialWriter = new FileWriter("sequential-selection-sort-results.txt");
+        FileWriter concurrentWriter = new FileWriter("concurrent-selection-sort-results.txt");
+        sequentialWriter.write("size\tascending(MS)\tdescending(MS)\tshuffled(MS)\n");
+        concurrentWriter.write("size\tascending(MS)\tdescending(MS)\tshuffled(MS)\n");
+
+        // Record start and end times
+        long startTime;
+        long endTime;
+        long ascendingTime;
+        long descendingTime;
+        long shuffledTime;
+
+        // Record whether the sorts were done correctly
+        boolean isSortedAscending;
+        boolean isSortedDescending;
+        boolean isSortedShuffled;
+        
+        Random rand = new Random();
+        System.out.println("testing selection sort...");
+
+        for (int iter = 0; iter < 10; iter++) {
+            for (int i = 0; i < arraySize * (iter + 1); i++) 
+                ascendingArray.add(i);
+        
+            for (int i = 0; i < arraySize * (iter + 1); i ++) 
+                shuffledArray.add(rand.nextInt(arraySize * (iter + 1)));
+            
+            
+            for (int i = 0; i < arraySize * (iter + 1); i++) 
+                descendingArray.add(arraySize * (iter + 1) - i - 1);
+
+            System.out.println("Iteration " + iter + ": testing on input of size " + arraySize * (iter + 1));
+
+            // Test sequential
+            ArrayList arrayCopy = (ArrayList) ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.selectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            ascendingTime = endTime - startTime;
+            isSortedAscending = true;
+
+            arrayCopy = (ArrayList) descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.selectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            descendingTime = endTime - startTime;
+            isSortedDescending = true;
+
+            arrayCopy = (ArrayList) shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.selectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            shuffledTime = endTime - startTime;
+            isSortedShuffled = Sorter.isSorted(arrayCopy);
+
+            sequentialWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
+            System.out.println("---sequential sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled));
+
+            // Test concurrent
+            arrayCopy = (ArrayList) ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.concurrentSelectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            ascendingTime = endTime - startTime;
+            isSortedAscending = true;
+
+            arrayCopy = (ArrayList) descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            //Sorter.concurrentSelectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            descendingTime = endTime - startTime;
+            isSortedDescending = true;
+
+            arrayCopy = (ArrayList) shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.concurrentSelectionSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            shuffledTime = endTime - startTime;
+            isSortedShuffled = Sorter.isSorted(arrayCopy);
+
+            concurrentWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
+            System.out.println("---concurrent sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled) + "\n");
+
+            ascendingArray.clear();
+            descendingArray.clear();
+            shuffledArray.clear();
+            
+
+        }    
+        sequentialWriter.close();
+        concurrentWriter.close();
+        System.out.println("Results written to files.");
     }
 }
