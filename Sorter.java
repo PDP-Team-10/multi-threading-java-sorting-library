@@ -8,6 +8,9 @@ public class Sorter {
     // Call concurrent shell sort
     public static <T extends Comparable<? super T>> void concurrentShellSort(List<T> list) throws InterruptedException{ ShellSort.concurrentShellSort(list); }
 
+    // Call sequential bubble sort
+    public static <T extends Comparable<? super T>> void bubbleSort(List<T> arr) { BubbleSort.bubbleSort(arr); }
+
     // Call concurrent bubble sort
     public static <T extends Comparable<? super T>> void concurrentBubbleSort(List<T> list) { BubbleSort.concurrentBubbleSort(list); }
 
