@@ -6,12 +6,29 @@ import java.lang.reflect.Array;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+class Value
+{
+    public Integer value;
+    public ReentrantLock lock;
+
+    Value ()
+    {
+        this.value = 0;
+        this.lock = new ReentrantLock();
+    }
+
+    public String toString()
+    {
+        return "(" + this.value + ")";
+    }
+}
+
 public class BucketSort extends Thread
 {
     private Integer start, end;
     private static Integer min, max;
     private static List<Integer> array;
-    private static int [] bucket;
+    private static Value [] bucket;
 
     BucketSort ()
     {
@@ -23,6 +40,8 @@ public class BucketSort extends Thread
     {   
         this.start = start;
         this.end = end;
+        // System.out.println("start: " + this.start);
+        // System.out.println("finish: " + this.end);
     }
 
     public void run()
@@ -30,7 +49,17 @@ public class BucketSort extends Thread
         for (int i = this.start; i < this.end; i++)
         {
             int k = this.array.get(i) - this.min;
-            this.bucket[k]++;
+            
+            this.bucket[k].lock.lock();
+
+            try
+            {
+                this.bucket[k].value++;
+            }
+            finally
+            {
+                this.bucket[k].lock.unlock();
+            }
         }
     }
 
@@ -57,21 +86,26 @@ public class BucketSort extends Thread
 
         int bucketSize = this.max - this.min + 1;
         
-        this.bucket = new int[bucketSize];
+        this.bucket = new Value[bucketSize];
+
+        for (int i = 0; i < bucketSize; i++)
+        {
+            this.bucket[i] = new Value();
+        }
 
         for (int i = 0; i < this.array.size(); i++)
         {
             int k = this.array.get(i) - this.min;
-            this.bucket[k]++;
+            this.bucket[k].value++;
         }
 
         int j = 0;
         
         for (int i = 0; i < this.bucket.length; i++)
         {
-            while (this.bucket[i] > 0)
+            while (this.bucket[i].value > 0)
             {
-                this.bucket[i]--;
+                this.bucket[i].value--;
                 this.array.set(j, i + min);
                 j++;
             }
@@ -85,7 +119,12 @@ public class BucketSort extends Thread
 
         int bucketSize = this.max - this.min + 1;
 
-        this.bucket = new int[bucketSize];
+        this.bucket = new Value[bucketSize];
+
+        for (int i = 0; i < bucketSize; i++)
+        {
+            this.bucket[i] = new Value();
+        }
         
         int numThreads = Runtime.getRuntime().availableProcessors();
         BucketSort [] threads = null;
@@ -109,6 +148,7 @@ public class BucketSort extends Thread
             for (int i = 0; i < threads.length; i++)
             {
                 finish = (i < threads.length - 1) ? finish + partition : this.array.size();
+                
                 threads[i] = new BucketSort(begin, finish);
                 threads[i].start();
                 begin = finish;
@@ -122,11 +162,11 @@ public class BucketSort extends Thread
 
         int j = 0;
 
-        for (int i = 0; i < bucket.length; i++)
+        for (int i = 0; i < this.bucket.length; i++)
         {
-            while (bucket[i] > 0)
+            while (this.bucket[i].value > 0)
             {
-                bucket[i]--;
+                bucket[i].value--;
                 this.array.set(j, i + min);
                 j++;
             }
@@ -172,7 +212,7 @@ public class BucketSort extends Thread
             System.out.println("Iteration " + iter + ": testing on input of size " + arraySize * (iter + 1));
 
             // Test sequential
-            ArrayList arrayCopy = (ArrayList) ascendingArray.clone();
+            ArrayList<Integer> arrayCopy = (ArrayList) ascendingArray.clone();
             startTime = System.currentTimeMillis();
             Sorter.bucketSort(arrayCopy);
             endTime = System.currentTimeMillis();
@@ -217,6 +257,10 @@ public class BucketSort extends Thread
             endTime = System.currentTimeMillis();
             shuffledTime = endTime - startTime;
             isSortedShuffled = Sorter.isSorted(arrayCopy);
+
+            System.out.println("Ascending Array:" + isSortedAscending);
+            System.out.println("Descending Array:" + isSortedDescending);
+            System.out.println("Shuffle Array:" + isSortedShuffled);
 
             concurrentWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
             System.out.println("---concurrent sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled) + "\n");
