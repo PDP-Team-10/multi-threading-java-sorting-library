@@ -35,7 +35,7 @@ public class SortingTests {
                     ShellSort.testShellSort(arraySize);
                     break;
                 case 5:
-                    SelectionSort.testSelectionlSort(arraySize);
+                    SelectionSort.testSelectionSort(arraySize);
                     break;
                 default:
                     System.out.println("Wrong input");
