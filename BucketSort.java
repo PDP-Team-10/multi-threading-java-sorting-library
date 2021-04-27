@@ -6,28 +6,12 @@ import java.lang.reflect.Array;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-// Value Object: Contains an integer and lock
-class Value
-{
-    public Integer value;
-
-    Value ()
-    {
-        this.value = 0;
-    }
-
-    public String toString()
-    {
-        return "(" + this.value + ")";
-    }
-}
-
 public class BucketSort extends Thread
 {
     private Integer start, end;
     private static Integer min, max;
     private static List<Integer> array;
-    private static Value [] bucket;
+    private static int [] bucket;
 
     BucketSort ()
     {
@@ -46,7 +30,7 @@ public class BucketSort extends Thread
         for (int i = this.start; i < this.end; i++)
         {
             int k = this.array.get(i) - this.min;
-            this.bucket[k].value++;
+            this.bucket[k]++;
         }
     }
 
@@ -73,26 +57,21 @@ public class BucketSort extends Thread
 
         int bucketSize = this.max - this.min + 1;
         
-        this.bucket = new Value[bucketSize];
-
-        for (int i = 0; i < bucketSize; i++)
-        {
-            this.bucket[i] = new Value();
-        }
+        this.bucket = new int[bucketSize];
 
         for (int i = 0; i < this.array.size(); i++)
         {
             int k = this.array.get(i) - this.min;
-            this.bucket[k].value++;
+            this.bucket[k]++;
         }
 
         int j = 0;
         
         for (int i = 0; i < this.bucket.length; i++)
         {
-            while (this.bucket[i].value > 0)
+            while (this.bucket[i] > 0)
             {
-                this.bucket[i].value--;
+                this.bucket[i]--;
                 this.array.set(j, i + min);
                 j++;
             }
@@ -106,12 +85,7 @@ public class BucketSort extends Thread
 
         int bucketSize = this.max - this.min + 1;
 
-        this.bucket = new Value[bucketSize];
-        
-        for (int i = 0; i < this.bucket.length; i++)
-        {
-            this.bucket[i] = new Value();
-        }
+        this.bucket = new int[bucketSize];
         
         int numThreads = Runtime.getRuntime().availableProcessors();
         BucketSort [] threads = null;
@@ -150,12 +124,111 @@ public class BucketSort extends Thread
 
         for (int i = 0; i < bucket.length; i++)
         {
-            while (bucket[i].value > 0)
+            while (bucket[i] > 0)
             {
-                bucket[i].value--;
+                bucket[i]--;
                 this.array.set(j, i + min);
                 j++;
             }
         }
+    }
+
+    public static void testBucketSort(int arraySize) throws IOException, InterruptedException{
+        ArrayList<Integer> ascendingArray = new ArrayList<Integer>();
+        ArrayList<Integer> descendingArray = new ArrayList<Integer>();
+        ArrayList<Integer> shuffledArray = new ArrayList<Integer>();
+
+        FileWriter sequentialWriter = new FileWriter("sequential-bucket-sort-results.txt");
+        FileWriter concurrentWriter = new FileWriter("concurrent-bucket-sort-results.txt");
+        sequentialWriter.write("size\tascending(MS)\tdescending(MS)\tshuffled(MS)\n");
+        concurrentWriter.write("size\tascending(MS)\tdescending(MS)\tshuffled(MS)\n");
+
+        // Record start and end times
+        long startTime;
+        long endTime;
+        long ascendingTime;
+        long descendingTime;
+        long shuffledTime;
+
+        // Record whether the sorts were done correctly
+        boolean isSortedAscending;
+        boolean isSortedDescending;
+        boolean isSortedShuffled;
+        
+        Random rand = new Random();
+        System.out.println("testing bucket sort...");
+
+        for (int iter = 0; iter < 10; iter++) {
+            for (int i = 0; i < arraySize * (iter + 1); i++) 
+                ascendingArray.add(i);
+        
+            for (int i = 0; i < arraySize * (iter + 1); i ++) 
+                shuffledArray.add(rand.nextInt(arraySize * (iter + 1)));
+            
+            
+            for (int i = 0; i < arraySize * (iter + 1); i++) 
+                descendingArray.add(arraySize * (iter + 1) - i - 1);
+
+            System.out.println("Iteration " + iter + ": testing on input of size " + arraySize * (iter + 1));
+
+            // Test sequential
+            ArrayList arrayCopy = (ArrayList) ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.bucketSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            ascendingTime = endTime - startTime;
+            isSortedAscending = Sorter.isSorted(arrayCopy);
+
+            arrayCopy = (ArrayList) descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.bucketSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            descendingTime = endTime - startTime;
+            isSortedDescending = Sorter.isSorted(arrayCopy);
+
+            arrayCopy = (ArrayList) shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.bucketSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            shuffledTime = endTime - startTime;
+            isSortedShuffled = Sorter.isSorted(arrayCopy);
+
+            sequentialWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
+            System.out.println("---sequential sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled));
+
+            // Test concurrent
+            arrayCopy = (ArrayList) ascendingArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.concurrentBucketSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            ascendingTime = endTime - startTime;
+            isSortedAscending = Sorter.isSorted(arrayCopy);
+
+            arrayCopy = (ArrayList) descendingArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.concurrentBucketSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            descendingTime = endTime - startTime;
+            isSortedDescending = Sorter.isSorted(arrayCopy);
+
+            arrayCopy = (ArrayList) shuffledArray.clone();
+            startTime = System.currentTimeMillis();
+            Sorter.concurrentBucketSort(arrayCopy);
+            endTime = System.currentTimeMillis();
+            shuffledTime = endTime - startTime;
+            isSortedShuffled = Sorter.isSorted(arrayCopy);
+
+            concurrentWriter.write(arraySize * (iter + 1) + "\t" + ascendingTime + "\t" + descendingTime + "\t" + shuffledTime + "\n");
+            System.out.println("---concurrent sorted correctly: " + (isSortedAscending && isSortedDescending && isSortedShuffled) + "\n");
+
+            ascendingArray.clear();
+            descendingArray.clear();
+            shuffledArray.clear();
+            
+
+        }    
+        sequentialWriter.close();
+        concurrentWriter.close();
+        System.out.println("Results written to files.");
     }
 }

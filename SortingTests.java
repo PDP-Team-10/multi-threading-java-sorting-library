@@ -13,12 +13,10 @@ public class SortingTests {
             System.out.println("Enter list size (default 50,000)");
             arraySize = in.nextInt();
         } while (arraySize < 0);
-
-        
-        
+   
         System.out.println("Comparison of execution time for sequential and multi-threaded sorting algorithms\n");
         //ShellSort.testShellSort(arraySize);
-        QuickSort.testQuickSort(arraySize);
+        BucketSort.testBucketSort(arraySize);
         in.close();
     }
 }

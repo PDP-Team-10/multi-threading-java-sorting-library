@@ -43,7 +43,7 @@ public class BubbleSort
                 //System.out.println(Arrays.toString(arr));
     }
 
-    static <T extends Comparable<? super T>> directionalBubbleSort(List<T> arr, int mid, boolean direction) 
+    static <T extends Comparable<? super T>> void directionalBubbleSort(List<T> arr, int mid, boolean direction) 
     { 
         int n = arr.size();
         if(direction){

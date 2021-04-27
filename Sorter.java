@@ -23,6 +23,20 @@ public class Sorter {
     // Call concurrent quick sort
     public static <T extends Comparable<? super T>> void concurrentQuickSort(List<T> list) throws InterruptedException{ QuickSort.concurrentSort(list); }
 
+    // Call sequential bucket sort
+    public static void bucketSort(List<Integer> list) 
+    {
+        BucketSort b = new BucketSort();
+        b.sortSequential(list);
+    }
+
+    // Call concurrent bucket sort
+    public static void concurrentBucketSort(List<Integer> list) throws InterruptedException
+    {
+        BucketSort b = new BucketSort();
+        b.sort(list);
+    }
+
     // Check if list is sorted
     public static <T extends Comparable<? super T>> boolean isSorted(List<T> list)
     {       
@@ -30,5 +44,4 @@ public class Sorter {
             if (list.get(i-1).compareTo(list.get(i)) > 0) return false;    
         return true;
     }
-
 }
